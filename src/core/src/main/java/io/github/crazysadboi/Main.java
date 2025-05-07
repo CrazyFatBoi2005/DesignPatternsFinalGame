@@ -57,7 +57,6 @@ public class Main extends ApplicationAdapter implements GameState {
         blocks.add(new Block(initialX + 50, initialY, blockTexture));
         blocks.add(new Block(initialX, initialY + 50, blockTexture));
         blocks.add(new Block(initialX + 50, initialY + 50, blockTexture));
-
         player = new Player(initialX, initialY, playerTexture);
         enemies = new ArrayList<>();
         enemyFactory = new EnemyFactory(enemyTexture, enemies, blocks);
@@ -103,7 +102,11 @@ public class Main extends ApplicationAdapter implements GameState {
             float mouseX = Gdx.input.getX();
             float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
             Vector2 direction = new Vector2(mouseX - (player.getX() + 25), mouseY - (player.getY() + 25)).nor();
-            bullets.add(new Bullet(player.getX() + 25 - 5, player.getY() + 25 - 5, direction, bulletTexture));
+//          // TODO: переделать для стрельбы плеера player.shoot()
+            Bullet _bullet = player.shoot(direction);
+            if (_bullet != null) {
+                bullets.add(_bullet); // возможно передать текстуры, но лучше засунуть их в пулю
+            }
             currentBullets--;
             GameEventManager.getInstance().notify("bulletFired");
         }
