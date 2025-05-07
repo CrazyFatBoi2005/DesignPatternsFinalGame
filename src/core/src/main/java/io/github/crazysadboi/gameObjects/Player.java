@@ -1,17 +1,16 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import io.github.crazysadboi.MovementStrategy;
 
-public class Player implements GameObject {
+public class Player extends BaseGameObject {
     private float x, y;
     private int lives;
     private Texture texture;
 
     public Player(float startX, float startY, Texture texture) {
-        this.x = startX;
-        this.y = startY;
-        this.texture = texture;
+        super(startX, startY, texture);
         this.lives = 5;
     }
 

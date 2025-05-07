@@ -1,6 +1,8 @@
 package io.github.crazysadboi;
 
 import com.badlogic.gdx.math.Vector2;
+import io.github.crazysadboi.gameObjects.Enemy;
+import io.github.crazysadboi.gameObjects.GameObject;
 
 public class EnemyMovementStrategy implements MovementStrategy {
     @Override

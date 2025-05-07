@@ -1,32 +1,13 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class Block implements GameObject {
+public class Block extends BaseGameObject {
     private float x, y;
     private Texture texture;
 
     public Block(float x, float y, Texture texture) {
-        this.x = x;
-        this.y = y;
-        this.texture = texture;
-    }
-
-    @Override
-    public void render(SpriteBatch batch) {
-        batch.draw(texture, x, y, 50, 50);
-    }
-
-    @Override
-    public float getX() { return x; }
-    @Override
-    public float getY() { return y; }
-
-    @Override
-    public void setPosition(float x, float y) {
-        this.x = x;
-        this.y = y;
+        super(x, y, texture);
     }
 }
 

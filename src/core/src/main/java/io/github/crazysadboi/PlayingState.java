@@ -5,8 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import io.github.crazysadboi.gameObjects.*;
+
 import java.util.ArrayList;
 
 public class PlayingState implements GameState {
@@ -234,13 +235,8 @@ public class PlayingState implements GameState {
         for (Enemy enemy : enemies) {
             enemy.moveTowards(player.getX() + 25, player.getY() + 25, deltaTime, new EnemyMovementStrategy());
             if (enemy.isOnBlock(blocks, 50)) {
-                enemy.timeOnBlock += deltaTime;
-                if (enemy.timeOnBlock >= 4f) {
-                    enemy.destroyBlock(blocks, 50, player);
-                    enemy.timeOnBlock = 0f;
-                }
-            } else {
-                enemy.timeOnBlock = 0f;
+                enemy.destroyBlock(blocks, 50, player);
+                enemy.destroy();
             }
             enemy.attackPlayer(player, deltaTime);
         }

@@ -1,41 +1,22 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-public class Bullet implements GameObject {
+public class Bullet extends BaseGameObject {
     private float x, y;
-    private Vector2 direction;
     private Texture texture;
+    private Vector2 direction;
     private float speed = 200f;
 
     public Bullet(float x, float y, Vector2 direction, Texture texture) {
-        this.x = x;
-        this.y = y;
+        super(x, y, texture);
         this.direction = direction;
-        this.texture = texture;
     }
 
     public void update(float deltaTime) {
         x += direction.x * speed * deltaTime;
         y += direction.y * speed * deltaTime;
-    }
-
-    @Override
-    public void render(SpriteBatch batch) {
-        batch.draw(texture, x, y, 10, 10);
-    }
-
-    @Override
-    public float getX() { return x; }
-    @Override
-    public float getY() { return y; }
-
-    @Override
-    public void setPosition(float x, float y) {
-        this.x = x;
-        this.y = y;
     }
 }
 

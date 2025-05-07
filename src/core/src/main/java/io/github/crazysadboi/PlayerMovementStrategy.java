@@ -1,5 +1,8 @@
 package io.github.crazysadboi;
 
+import io.github.crazysadboi.gameObjects.GameObject;
+import io.github.crazysadboi.gameObjects.Player;
+
 public class PlayerMovementStrategy implements MovementStrategy {
     @Override
     public void move(GameObject object, float deltaX, float deltaY, float deltaTime) {

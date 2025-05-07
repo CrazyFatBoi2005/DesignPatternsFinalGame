@@ -1,5 +1,7 @@
 package io.github.crazysadboi;
 
+import io.github.crazysadboi.gameObjects.GameObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +26,10 @@ public class GameObjectHolder {
 
     public GameObject getObject(String key) {
         return objects.get(key);
+    }
+
+    public void clearDestroyed(){
+        objects.entrySet().removeIf(entry -> entry.getValue().isDestroyed());
     }
 }
 

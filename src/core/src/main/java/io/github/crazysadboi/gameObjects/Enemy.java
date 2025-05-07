@@ -1,37 +1,18 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import io.github.crazysadboi.MovementStrategy;
+
 import java.util.ArrayList;
 
-public class Enemy implements GameObject {
+public class Enemy extends BaseGameObject {
     private float x, y;
     private Texture texture;
-    public float timeOnBlock;
     private float attackCooldown;
 
     public Enemy(float x, float y, Texture texture) {
-        this.x = x;
-        this.y = y;
-        this.texture = texture;
-        this.timeOnBlock = 0f;
+        super(x, y, texture);
         this.attackCooldown = 0f;
-    }
-
-    @Override
-    public void render(SpriteBatch batch) {
-        batch.draw(texture, x, y, 50, 50);
-    }
-
-    @Override
-    public float getX() { return x; }
-    @Override
-    public float getY() { return y; }
-
-    @Override
-    public void setPosition(float x, float y) {
-        this.x = x;
-        this.y = y;
     }
 
     public void moveTowards(float targetX, float targetY, float deltaTime, MovementStrategy strategy) {
