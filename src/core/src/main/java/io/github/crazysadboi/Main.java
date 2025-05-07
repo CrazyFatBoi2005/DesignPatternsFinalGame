@@ -27,6 +27,7 @@ public class Main extends ApplicationAdapter implements GameState {
     private float bulletRechargeTime = 0f;
     private float gameTime = 0f;
     private int enemiesKilled = 0;
+    private int recordEnemiesKilled = 0;
     private int currentBullets = 25;
     private final int maxBullets = 25;
     private boolean gameOver = false;
@@ -63,6 +64,14 @@ public class Main extends ApplicationAdapter implements GameState {
             enemyFactory.createEnemy();
         }
         bullets = new ArrayList<>();
+
+        // Сброс текущего счёта убийств и пуль при новой игре
+        enemiesKilled = 0;
+        currentBullets = maxBullets; // Устанавливаем полное количество пуль в начале игры
+        // Обновление рекорда, если текущий счёт выше
+        if (enemiesKilled > recordEnemiesKilled) {
+            recordEnemiesKilled = enemiesKilled;
+        }
     }
 
     @Override
@@ -70,7 +79,7 @@ public class Main extends ApplicationAdapter implements GameState {
         if (gameOver) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
                 gameOver = false;
-                initialize();
+                initialize(); // Перезапуск сбрасывает счёт и пули
             }
             return;
         }
@@ -132,6 +141,10 @@ public class Main extends ApplicationAdapter implements GameState {
         // Проверка конца игры
         if (player.getLives() <= 0) {
             gameOver = true;
+            // Обновление рекорда перед сбросом
+            if (enemiesKilled > recordEnemiesKilled) {
+                recordEnemiesKilled = enemiesKilled;
+            }
             GameEventManager.getInstance().notify("gameOver");
         }
 
@@ -185,15 +198,16 @@ public class Main extends ApplicationAdapter implements GameState {
         for (int i = 0; i < player.getLives(); i++) {
             this.batch.draw(heartTexture, 10 + i * 40, Gdx.graphics.getHeight() - 40, 32, 32);
         }
-        font.draw(this.batch, "Time: " + (int)gameTime + " sec, Kills: " + enemiesKilled,
-            Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 10);
-        font.draw(this.batch, "Bullets: " + currentBullets + "/" + maxBullets,
-            Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 25);
+        font.draw(this.batch, "Time: " + (int)gameTime + " sec", Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 10);
+        font.draw(this.batch, "Kills: " + enemiesKilled, Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 25);
+        font.draw(this.batch, "Record: " + recordEnemiesKilled, Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 40);
+        font.draw(this.batch, "Bullets: " + currentBullets + "/" + maxBullets, Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 55);
 
         if (gameOver) {
             font.draw(this.batch, "Game Over", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2 + 30);
             font.draw(this.batch, "Time: " + (int)gameTime + " sec", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2);
             font.draw(this.batch, "Kills: " + enemiesKilled, Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2 - 15);
+            font.draw(this.batch, "Record: " + recordEnemiesKilled, Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2 - 30);
             font.draw(this.batch, "Press R to Restart", Gdx.graphics.getWidth() / 2 - 70, Gdx.graphics.getHeight() / 2 - 60);
         }
 
