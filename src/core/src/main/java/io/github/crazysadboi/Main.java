@@ -289,6 +289,7 @@ public class Main extends ApplicationAdapter implements GameState {
         return false;
     }
 }
+
 /*Используемый шаблон проектирования:
  * - **Шаблон "Состояние" (State Pattern)**: интерфейс GameState может быть частью реализации различных состояний игры.
  * - **Шаблон "Стратегия" (Strategy Pattern)**: используется для управления движением игрока и врагов
