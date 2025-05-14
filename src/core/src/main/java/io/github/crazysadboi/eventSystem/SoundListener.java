@@ -1,6 +1,6 @@
 package io.github.crazysadboi.eventSystem;
 
-import io.github.crazysadboi.SoundManager;
+import io.github.crazysadboi.utils.SoundManager;
 
 public class SoundListener implements EventListener {
 

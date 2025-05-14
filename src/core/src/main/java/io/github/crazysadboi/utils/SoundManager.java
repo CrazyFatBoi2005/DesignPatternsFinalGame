@@ -1,4 +1,4 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
