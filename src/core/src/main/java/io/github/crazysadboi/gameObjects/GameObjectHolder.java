@@ -53,7 +53,6 @@ public class GameObjectHolder {
         }
         objects.clear();
         objectId = 0;
-        System.out.println("GameObjectHolder disposed: все объекты удалены");
     }
 }
 

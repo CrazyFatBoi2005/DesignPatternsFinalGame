@@ -10,8 +10,10 @@ public class EnemyMovementStrategy implements MovementStrategy {
         Enemy enemy = (Enemy) object;
         float targetX = deltaX;
         float targetY = deltaY;
-        Vector2 direction = new Vector2(targetX - (enemy.getX() + 25), targetY - (enemy.getY() + 25)).nor();
-        enemy.setPosition(enemy.getX() + direction.x * 50 * deltaTime, enemy.getY() + direction.y * 50 * deltaTime);
+        Vector2 direction = new Vector2(targetX - (enemy.getX() + 25),
+            targetY - (enemy.getY() + 25)).nor();
+        enemy.setPosition(enemy.getX() + direction.x * 50 * deltaTime,
+            enemy.getY() + direction.y * 50 * deltaTime);
     }
 }
 
