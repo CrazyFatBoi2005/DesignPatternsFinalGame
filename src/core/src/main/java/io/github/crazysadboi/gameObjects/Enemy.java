@@ -50,7 +50,7 @@ public class Enemy extends BaseGameObject {
             if (x < player.getX() + 50 && x + 50 > player.getX() &&
                 y < player.getY() + 50 && y + 50 > player.getY()) {
                 player.loseLife();
-                attackCooldown = 2f;
+                destroy();
             }
         }
     }

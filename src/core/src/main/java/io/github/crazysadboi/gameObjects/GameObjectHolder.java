@@ -46,6 +46,15 @@ public class GameObjectHolder {
             }
         }
     }
+
+    public void dispose() {
+        for (GameObject obj : objects.values()) {
+            obj.dispose();
+        }
+        objects.clear();
+        objectId = 0;
+        System.out.println("GameObjectHolder disposed: все объекты удалены");
+    }
 }
 
 /*Шаблон:

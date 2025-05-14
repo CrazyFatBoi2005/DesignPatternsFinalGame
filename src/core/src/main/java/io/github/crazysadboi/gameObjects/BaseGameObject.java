@@ -49,8 +49,18 @@ public class BaseGameObject implements GameObject{
     }
 
     @Override
+    public void dispose() {
+        if (texture != null) {
+            texture.dispose();
+            texture = null;
+        }
+    }
+
+    @Override
     public void render(SpriteBatch batch) {
         if(!destroyed) batch.draw(texture, x, y, 50, 50);
     }
+
+
 }
 

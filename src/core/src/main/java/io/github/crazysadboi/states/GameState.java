@@ -1,13 +1,14 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.states;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 public interface GameState {
-    void initialize();
-    void update(float deltaTime);
-    void render(SpriteBatch batch, BitmapFont font);
+    void enter();
+    void update(float delta);
+    void render(SpriteBatch batch);
+    void exit();
 }
+
 /*Интерфейс GameState определяет контракт для состояний игры в DesignPatternsFinalGame, управляя их поведением.
 
 - Метод `initialize`: Инициализирует состояние (например, загрузка ресурсов или объектов).

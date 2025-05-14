@@ -1,4 +1,4 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,6 +17,10 @@ public class EnemyFactory {
         this.enemyTexture = enemyTexture;
         this.enemies = enemies;
         this.blocks = blocks;
+    }
+
+    public Texture getEnemyTexture() {
+        return enemyTexture;
     }
 
     public Enemy createEnemy() {

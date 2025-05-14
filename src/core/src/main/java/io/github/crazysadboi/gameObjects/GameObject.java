@@ -11,6 +11,8 @@ public interface GameObject {
 
     boolean isDestroyed();
     int getLayer();
+
+    void dispose();
 }
 
 /**
