@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import io.github.crazysadboi.eventSystem.GameEventManager;
+import io.github.crazysadboi.eventSystem.SoundListener;
 import io.github.crazysadboi.gameObjects.*;
 
 import java.util.ArrayList;
@@ -20,6 +22,9 @@ public class Main extends ApplicationAdapter implements GameState {
     private ArrayList<Enemy> enemies;
     private ArrayList<Bullet> bullets;
     private Player player;
+    private GameEventManager eventManager;
+    private SoundListener soundListener;
+    private SoundManager soundManager;
     private float initialX, initialY;
     private float timeOffBlock = 0f;
     private final float timeToLoseLife = 3.5f;
@@ -44,21 +49,25 @@ public class Main extends ApplicationAdapter implements GameState {
         batch = new SpriteBatch();
         font = new BitmapFont();
         background = new Texture("sea.png");
-        blockTexture = new Texture("block.png");
-        playerTexture = new Texture("player.png");
         heartTexture = new Texture("heart.png");
-        enemyTexture = new Texture("enemy.png");
-        bulletTexture = new Texture("bullet.png");
 
         blocks = new ArrayList<>();
-        initialX = Math.round(Gdx.graphics.getWidth() / 2 / 50) * 50;
-        initialY = Math.round(Gdx.graphics.getHeight() / 2 / 50) * 50;
-        blocks.add(new Block(initialX, initialY, blockTexture));
-        blocks.add(new Block(initialX + 50, initialY, blockTexture));
-        blocks.add(new Block(initialX, initialY + 50, blockTexture));
-        blocks.add(new Block(initialX + 50, initialY + 50, blockTexture));
+        initialX = Math.round((float) Gdx.graphics.getWidth() / 2 / 50) * 50;
+        initialY = Math.round((float) Gdx.graphics.getHeight() / 2 / 50) * 50;
+        blocks.add(new Block(initialX, initialY));
+        blocks.add(new Block(initialX + 50, initialY));
+        blocks.add(new Block(initialX, initialY + 50));
+        blocks.add(new Block(initialX + 50, initialY + 50));
 
-        player = new Player(initialX, initialY, playerTexture);
+        // Singleton init
+        eventManager = GameEventManager.getInstance();
+
+        soundManager = new SoundManager();
+        soundListener = new SoundListener(soundManager);
+
+        eventManager.subscribe("PLAYER_SHOOT", soundListener);
+
+        player = new Player(initialX, initialY);
         enemies = new ArrayList<>();
         enemyFactory = new EnemyFactory(enemyTexture, enemies, blocks);
         for (int i = 0; i < 2; i++) {
@@ -103,9 +112,9 @@ public class Main extends ApplicationAdapter implements GameState {
             float mouseX = Gdx.input.getX();
             float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
             Vector2 direction = new Vector2(mouseX - (player.getX() + 25), mouseY - (player.getY() + 25)).nor();
-            bullets.add(new Bullet(player.getX() + 25 - 5, player.getY() + 25 - 5, direction, bulletTexture));
+            bullets.add(new Bullet(player.getX() + 25 - 5, player.getY() + 25 - 5, direction));
             currentBullets--;
-            GameEventManager.getInstance().notify("bulletFired");
+            eventManager.notify("PLAYER_SHOOT");
         }
 
         // Восстановление пуль
@@ -156,7 +165,7 @@ public class Main extends ApplicationAdapter implements GameState {
             float blockX = Math.round(mouseX / 50) * 50;
             float blockY = Math.round(mouseY / 50) * 50;
             if (!blockExists(blockX, blockY)) {
-                blocks.add(new Block(blockX, blockY, blockTexture));
+                blocks.add(new Block(blockX, blockY));
                 GameEventManager.getInstance().notify("blockPlaced");
             }
         }
@@ -258,6 +267,7 @@ public class Main extends ApplicationAdapter implements GameState {
     }
 
     private void updateEnemies(float deltaTime) {
+        enemies.removeIf(Enemy::isDestroyed);
         for (Enemy enemy : enemies) {
             enemy.moveTowards(player.getX() + 25, player.getY() + 25, deltaTime, new EnemyMovementStrategy());
             if (enemy.isOnBlock(blocks, 50)) {

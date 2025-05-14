@@ -5,12 +5,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.crazysadboi.MovementStrategy;
 
 public class Player extends BaseGameObject {
-    private float x, y;
     private int lives;
-    private Texture texture;
 
-    public Player(float startX, float startY, Texture texture) {
-        super(startX, startY, texture);
+    public Player(float startX, float startY) {
+        super(startX, startY, new Texture("player.png"));
         this.lives = 5;
     }
 
@@ -26,21 +24,6 @@ public class Player extends BaseGameObject {
         return lives;
     }
 
-    @Override
-    public float getX() { return x; }
-    @Override
-    public float getY() { return y; }
-
-    @Override
-    public void setPosition(float x, float y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    @Override
-    public void render(SpriteBatch batch) {
-        batch.draw(texture, x, y, 50, 50);
-    }
 }
 /*
  * Player.java

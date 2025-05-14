@@ -45,7 +45,7 @@ public class EnemyFactory {
             }
         } while (!validPosition);
 
-        Enemy enemy = new Enemy(x, y, enemyTexture);
+        Enemy enemy = new Enemy(x, y);
         enemies.add(enemy);
         return enemy;
     }

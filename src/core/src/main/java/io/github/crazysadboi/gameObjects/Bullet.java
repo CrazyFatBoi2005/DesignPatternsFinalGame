@@ -4,13 +4,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
 public class Bullet extends BaseGameObject {
-    private float x, y;
-    private Texture texture;
     private Vector2 direction;
     private float speed = 200f;
 
-    public Bullet(float x, float y, Vector2 direction, Texture texture) {
-        super(x, y, texture);
+    public Bullet(float x, float y, Vector2 direction) {
+        super(x, y, new Texture("bullet.png"));
         this.direction = direction;
     }
 

@@ -1,4 +1,4 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.eventSystem;
 
 import java.util.ArrayList;
 import java.util.HashMap;

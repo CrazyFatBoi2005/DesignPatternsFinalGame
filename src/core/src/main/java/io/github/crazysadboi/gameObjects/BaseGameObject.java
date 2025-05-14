@@ -4,15 +4,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class BaseGameObject implements GameObject{
-    private float x, y;
-    private Texture texture;
-    private boolean destroyed = false;
+    protected float x, y;
+    protected Texture texture;
+    protected boolean destroyed = false;
 
 
     public BaseGameObject(float x, float y, Texture texture){
         this.x = x;
         this.y = y;
-        this.texture = texture;
+        if (texture != null) this.texture = texture;
+        else this.texture = new Texture("empty.png");
     }
     @Override
     public float getX() { return x; }
@@ -41,7 +42,7 @@ public class BaseGameObject implements GameObject{
 
     @Override
     public void render(SpriteBatch batch) {
-        batch.draw(texture, x, y, 50, 50);
+        if(!destroyed) batch.draw(texture, x, y, 50, 50);
     }
 }
 

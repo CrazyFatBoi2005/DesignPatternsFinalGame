@@ -1,13 +1,13 @@
 package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 
 public class Block extends BaseGameObject {
-    private float x, y;
-    private Texture texture;
 
-    public Block(float x, float y, Texture texture) {
-        super(x, y, texture);
+    public Block(float x, float y){
+        super(x, y, new Texture("block.png"));
+
     }
 }
 

@@ -6,12 +6,10 @@ import io.github.crazysadboi.MovementStrategy;
 import java.util.ArrayList;
 
 public class Enemy extends BaseGameObject {
-    private float x, y;
-    private Texture texture;
     private float attackCooldown;
 
-    public Enemy(float x, float y, Texture texture) {
-        super(x, y, texture);
+    public Enemy(float x, float y) {
+        super(x, y, new Texture("enemy.png"));
         this.attackCooldown = 0f;
     }
 
