@@ -2,18 +2,22 @@ package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import io.github.crazysadboi.GameObjectHolder;
 
 public class BaseGameObject implements GameObject{
     protected float x, y;
     protected Texture texture;
+    protected int layer;
     protected boolean destroyed = false;
 
 
-    public BaseGameObject(float x, float y, Texture texture){
+    public BaseGameObject(float x, float y, Texture texture, boolean register, int layer){
         this.x = x;
         this.y = y;
         if (texture != null) this.texture = texture;
         else this.texture = new Texture("empty.png");
+        if (register) GameObjectHolder.getInstance().registerObject(this);
+        this.layer = layer;
     }
     @Override
     public float getX() { return x; }
@@ -38,6 +42,11 @@ public class BaseGameObject implements GameObject{
     @Override
     public boolean isDestroyed() {
         return destroyed;
+    }
+
+    @Override
+    public int getLayer() {
+        return this.layer;
     }
 
     @Override

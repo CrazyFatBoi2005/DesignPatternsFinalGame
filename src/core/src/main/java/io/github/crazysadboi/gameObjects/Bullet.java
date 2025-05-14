@@ -9,7 +9,7 @@ public class Bullet extends BaseGameObject {
     private float speed = 400f;
 
     public Bullet(float x, float y, Vector2 direction) {
-        super(x, y, new Texture("bullet.png"));
+        super(x, y, new Texture("bullet.png"), true, 2);
         this.direction = direction;
     }
 

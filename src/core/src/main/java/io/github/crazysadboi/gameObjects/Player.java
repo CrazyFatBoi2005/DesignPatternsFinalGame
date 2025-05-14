@@ -8,7 +8,7 @@ public class Player extends BaseGameObject {
     private int lives;
 
     public Player(float startX, float startY) {
-        super(startX, startY, new Texture("player.png"));
+        super(startX, startY, new Texture("player.png"), false, 2);
         this.lives = 5;
     }
 

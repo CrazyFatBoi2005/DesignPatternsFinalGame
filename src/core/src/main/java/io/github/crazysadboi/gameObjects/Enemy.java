@@ -9,7 +9,7 @@ public class Enemy extends BaseGameObject {
     private float attackCooldown;
 
     public Enemy(float x, float y) {
-        super(x, y, new Texture("enemy.png"));
+        super(x, y, new Texture("enemy.png"), true, 2);
         this.attackCooldown = 0f;
     }
 
@@ -35,7 +35,9 @@ public class Enemy extends BaseGameObject {
                 boolean isUnderPlayer = player.getX() >= block.getX() && player.getX() <= block.getX() + blockSize &&
                     player.getY() >= block.getY() && player.getY() <= block.getY() + blockSize;
                 if (!isUnderPlayer) {
+                    blocks.get(i).destroy();
                     blocks.remove(i);
+                    this.destroy();
                     break;
                 }
             }

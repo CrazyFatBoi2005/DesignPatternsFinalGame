@@ -50,7 +50,6 @@ public class Main extends ApplicationAdapter implements GameState {
         font = new BitmapFont();
         background = new Texture("sea.png");
         heartTexture = new Texture("heart.png");
-
         blocks = new ArrayList<>();
         initialX = Math.round((float) Gdx.graphics.getWidth() / 2 / 50) * 50;
         initialY = Math.round((float) Gdx.graphics.getHeight() / 2 / 50) * 50;
@@ -89,7 +88,7 @@ public class Main extends ApplicationAdapter implements GameState {
         if (gameOver) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
                 gameOver = false;
-                initialize(); // Перезапуск сбрасывает счёт и пули
+                initialize();
             }
             return;
         }
@@ -102,13 +101,14 @@ public class Main extends ApplicationAdapter implements GameState {
         // Движение игрока
         float speed = 100f;
         float moveDistance = speed * deltaTime;
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) player.move(0, moveDistance, new PlayerMovementStrategy());
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) player.move(0, -moveDistance, new PlayerMovementStrategy());
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) player.move(-moveDistance, 0, new PlayerMovementStrategy());
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) player.move(moveDistance, 0, new PlayerMovementStrategy());
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) player.move(0, moveDistance, new PlayerMovementStrategy());
+        if (Gdx.input.isKeyPressed(Input.Keys.S)) player.move(0, -moveDistance, new PlayerMovementStrategy());
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) player.move(-moveDistance, 0, new PlayerMovementStrategy());
+        if (Gdx.input.isKeyPressed(Input.Keys.D)) player.move(moveDistance, 0, new PlayerMovementStrategy());
 
         // Выстрел
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && currentBullets > 0) {
+            System.out.println("PEW");
             float mouseX = Gdx.input.getX();
             float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
             Vector2 direction = new Vector2(mouseX - (player.getX() + 25), mouseY - (player.getY() + 25)).nor();
@@ -159,7 +159,7 @@ public class Main extends ApplicationAdapter implements GameState {
         }
 
         // Добавление блока
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
             float mouseX = Gdx.input.getX();
             float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
             float blockX = Math.round(mouseX / 50) * 50;
@@ -169,31 +169,18 @@ public class Main extends ApplicationAdapter implements GameState {
                 GameEventManager.getInstance().notify("blockPlaced");
             }
         }
-
-        // Удаление блока
-        if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
-            float mouseX = Gdx.input.getX();
-            float mouseY = Gdx.graphics.getHeight() - Gdx.input.getY();
-            blocks.removeIf(block -> {
-                boolean isClicked = mouseX >= block.getX() && mouseX <= block.getX() + 50 &&
-                    mouseY >= block.getY() && mouseY <= block.getY() + 50;
-                boolean isUnderPlayer = player.getX() >= block.getX() && player.getX() <= block.getX() + 50 &&
-                    player.getY() >= block.getY() && player.getY() <= block.getY() + 50;
-                if (isClicked && !isUnderPlayer) {
-                    GameEventManager.getInstance().notify("blockRemoved");
-                    return true;
-                }
-                return false;
-            });
-        }
     }
 
     @Override
     public void render(SpriteBatch batch, BitmapFont font) {
+        GameObjectHolder.getInstance().clearDestroyed();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         this.batch.begin();
         this.batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        for (GameObject block : blocks) block.render(this.batch);
+        GameObjectHolder.getInstance().renderObjects(this.batch);
+//        for (GameObject block : blocks) block.render(this.batch);
+
+        // Player render
         boolean isOnBlock = isPlayerOnBlock();
         if (!isOnBlock && timeOffBlock > 0) {
             float alpha = 0.5f + 0.5f * (float) Math.sin(stateTime * 5);
@@ -203,8 +190,8 @@ public class Main extends ApplicationAdapter implements GameState {
         } else {
             player.render(this.batch);
         }
-        for (GameObject enemy : enemies) enemy.render(this.batch);
-        for (GameObject bullet : bullets) bullet.render(this.batch);
+//        for (GameObject enemy : enemies) enemy.render(this.batch);
+//        for (GameObject bullet : bullets) bullet.render(this.batch);
         for (int i = 0; i < player.getLives(); i++) {
             this.batch.draw(heartTexture, 10 + i * 40, Gdx.graphics.getHeight() - 40, 32, 32);
         }
@@ -248,6 +235,7 @@ public class Main extends ApplicationAdapter implements GameState {
             bullet.update(deltaTime);
             if (bullet.getX() < 0 || bullet.getX() > Gdx.graphics.getWidth() ||
                 bullet.getY() < 0 || bullet.getY() > Gdx.graphics.getHeight()) {
+                bullets.get(i).destroy();
                 bullets.remove(i);
                 continue;
             }
@@ -255,6 +243,8 @@ public class Main extends ApplicationAdapter implements GameState {
                 Enemy enemy = enemies.get(j);
                 if (bullet.getX() < enemy.getX() + 50 && bullet.getX() + 10 > enemy.getX() &&
                     bullet.getY() < enemy.getY() + 50 && bullet.getY() + 10 > enemy.getY()) {
+                    enemies.get(j).destroy();
+                    bullets.get(i).destroy();
                     enemies.remove(j);
                     bullets.remove(i);
                     enemiesKilled++;

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Block extends BaseGameObject {
 
     public Block(float x, float y){
-        super(x, y, new Texture("block.png"));
+        super(x, y, new Texture("block.png"), true, 1);
 
     }
 }

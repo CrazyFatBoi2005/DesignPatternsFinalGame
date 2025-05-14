@@ -10,6 +10,7 @@ public interface GameObject {
     void setPosition(float x, float y);
 
     boolean isDestroyed();
+    int getLayer();
 }
 
 /**
