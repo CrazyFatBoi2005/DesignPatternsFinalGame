@@ -19,7 +19,7 @@ public abstract class BaseGameObject implements GameObject {
         return x;
     }
 
-    @Override
+    @Ovrride
     public float getY() {
         return y;
     }
