@@ -9,4 +9,6 @@ public interface GameObject {
     void setPosition(float x, float y);
     void destroy();
     boolean isDestroyed();
+
+    void update(float deltaTime);
 }

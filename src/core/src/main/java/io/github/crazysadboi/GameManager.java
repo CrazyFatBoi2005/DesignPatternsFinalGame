@@ -34,4 +34,7 @@ public class GameManager {
         batch.dispose();
         font.dispose();
     }
+
+    public void initialize() {
+    }
 }
