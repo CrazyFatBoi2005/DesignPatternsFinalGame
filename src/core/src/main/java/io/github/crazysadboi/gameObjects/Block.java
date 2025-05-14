@@ -2,7 +2,7 @@ package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
 
-public class Block extends BaseGameObject {
+public abstract class Block extends BaseGameObject {
     private float x, y;
     private Texture texture;
 

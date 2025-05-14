@@ -1,31 +1,27 @@
 package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class BaseGameObject implements GameObject{
+public abstract class BaseGameObject implements GameObject {
     private float x, y;
     private Texture texture;
-    private boolean destroyed = false;
+    private boolean destroyed;
 
-
-    public BaseGameObject(float x, float y, Texture texture){
+    public BaseGameObject(float x, float y, Texture texture) {
         this.x = x;
         this.y = y;
         this.texture = texture;
+        this.destroyed = false;
     }
-    @Override
-    public float getX() { return x; }
-    @Override
-    public float getY() { return y; }
 
     @Override
-    public void destroy() {
-        if (texture != null) {
-            texture.dispose();
-            texture = null;
-        }
-        destroyed = true;
+    public float getX() {
+        return x;
+    }
+
+    @Override
+    public float getY() {
+        return y;
     }
 
     @Override
@@ -35,13 +31,17 @@ public class BaseGameObject implements GameObject{
     }
 
     @Override
+    public void destroy() {
+        destroyed = true;
+        texture.dispose();
+    }
+
+    @Override
     public boolean isDestroyed() {
         return destroyed;
     }
 
-    @Override
-    public void render(SpriteBatch batch) {
-        batch.draw(texture, x, y, 50, 50);
+    protected Texture getTexture() {
+        return texture;
     }
 }
-

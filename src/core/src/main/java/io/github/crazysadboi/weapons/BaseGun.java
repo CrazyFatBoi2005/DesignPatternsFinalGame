@@ -1,50 +1,39 @@
 package io.github.crazysadboi.weapons;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import io.github.crazysadboi.gameObjects.Bullet;
 
-public class BaseGun implements Gun{
-    private int damage;
-    private final float reloadingTime = 1f;
-    private float reloadSpeed;
+public abstract class BaseGun implements Gun {
+    protected float reloadTime;
+    protected float reloadTimer;
+    protected boolean reloading;
 
-    // добавить reload time и проверять можно ли выстрелить, в случае, если нет - return null;
-    public BaseGun(int damage, float reloadSpeed){
-        this.damage = damage;
-        this.reloadSpeed = reloadSpeed;
-    }
-    @Override
-    public int getDamage() {
-        return damage;
+    public BaseGun(float reloadTime) {
+        this.reloadTime = reloadTime;
+        this.reloadTimer = 0;
+        this.reloading = false;
     }
 
     @Override
-    public void setDamage(int damage) {
-        this.damage = damage;
+    public Bullet shoot(float x, float y, Vector2 direction, Texture texture) {
+        reloading = true;
+        reloadTimer = reloadTime;
+        return new Bullet(x, y, direction, texture);
     }
 
     @Override
-    public float getReloadSpeed() {
-        return reloadSpeed;
-    }
-
-    @Override
-    public void setReloadSpeed(float reloadSpeed) {
-        this.reloadSpeed = reloadSpeed;
-    }
-
-    @Override
-    public Bullet shoot(float x, float y, Vector2 direction) {
-        return new Bullet(x, y, direction, null);
-    }
-
-    @Override
-    public void reloading() {
-
+    public void update(float deltaTime) {
+        if (reloading) {
+            reloadTimer -= deltaTime;
+            if (reloadTimer <= 0) {
+                reloading = false;
+            }
+        }
     }
 
     @Override
     public boolean isReloading() {
-        return false;
+        return reloading;
     }
 }

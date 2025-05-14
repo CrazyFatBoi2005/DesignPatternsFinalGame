@@ -2,21 +2,16 @@ package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
-import com.github.tommyettinger.digital.Base;
 import io.github.crazysadboi.MovementStrategy;
-import io.github.crazysadboi.weapons.BaseGun;
 
 public class Player extends BaseGameObject {
     private float x, y;
     private int lives;
     private Texture texture;
-    private BaseGun weapon;
 
-    public Player(float startX, float startY, Texture texture, BaseGun weapon) {
+    public Player(float startX, float startY, Texture texture) {
         super(startX, startY, texture);
         this.lives = 5;
-        this.weapon = weapon;
     }
 
     public void move(float deltaX, float deltaY, MovementStrategy strategy) {
@@ -45,10 +40,6 @@ public class Player extends BaseGameObject {
     @Override
     public void render(SpriteBatch batch) {
         batch.draw(texture, x, y, 50, 50);
-    }
-
-    public Bullet shoot(Vector2 direction){
-        return weapon.shoot(x, y, direction);
     }
 }
 /*
