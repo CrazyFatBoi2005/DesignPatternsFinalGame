@@ -1,11 +1,12 @@
 package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 public class Bullet extends BaseGameObject {
     private Vector2 direction;
-    private float speed = 200f;
+    private float speed = 400f;
 
     public Bullet(float x, float y, Vector2 direction) {
         super(x, y, new Texture("bullet.png"));
@@ -15,6 +16,11 @@ public class Bullet extends BaseGameObject {
     public void update(float deltaTime) {
         x += direction.x * speed * deltaTime;
         y += direction.y * speed * deltaTime;
+    }
+
+    @Override
+    public void render(SpriteBatch batch) {
+        if(!destroyed) batch.draw(texture, x, y, 10, 10);
     }
 }
 
