@@ -2,7 +2,6 @@ package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import io.github.crazysadboi.GameObjectHolder;
 
 public class BaseGameObject implements GameObject{
     protected float x, y;

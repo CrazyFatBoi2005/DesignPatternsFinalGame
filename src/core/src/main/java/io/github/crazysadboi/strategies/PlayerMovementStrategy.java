@@ -1,4 +1,4 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.strategies;
 
 import io.github.crazysadboi.gameObjects.GameObject;
 import io.github.crazysadboi.gameObjects.Player;

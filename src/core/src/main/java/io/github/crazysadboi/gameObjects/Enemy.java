@@ -1,7 +1,7 @@
 package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
-import io.github.crazysadboi.MovementStrategy;
+import io.github.crazysadboi.strategies.MovementStrategy;
 
 import java.util.ArrayList;
 

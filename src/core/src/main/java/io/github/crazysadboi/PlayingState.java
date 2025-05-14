@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import io.github.crazysadboi.eventSystem.GameEventManager;
 import io.github.crazysadboi.gameObjects.*;
+import io.github.crazysadboi.strategies.EnemyMovementStrategy;
+import io.github.crazysadboi.strategies.PlayerMovementStrategy;
 
 import java.util.ArrayList;
 

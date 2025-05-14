@@ -1,8 +1,7 @@
 package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import io.github.crazysadboi.MovementStrategy;
+import io.github.crazysadboi.strategies.MovementStrategy;
 
 public class Player extends BaseGameObject {
     private int lives;

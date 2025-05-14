@@ -1,4 +1,4 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.strategies;
 
 import com.badlogic.gdx.math.Vector2;
 import io.github.crazysadboi.gameObjects.Enemy;

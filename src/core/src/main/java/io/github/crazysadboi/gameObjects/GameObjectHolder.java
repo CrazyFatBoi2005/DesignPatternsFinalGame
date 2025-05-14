@@ -1,7 +1,6 @@
-package io.github.crazysadboi;
+package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import io.github.crazysadboi.gameObjects.GameObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
