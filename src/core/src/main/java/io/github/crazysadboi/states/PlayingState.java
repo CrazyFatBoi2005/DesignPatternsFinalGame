@@ -7,12 +7,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.assets.AssetManager;
 import io.github.crazysadboi.eventSystem.GameEventManager;
 import io.github.crazysadboi.eventSystem.SoundListener;
 import io.github.crazysadboi.gameObjects.*;
 import io.github.crazysadboi.strategies.EnemyMovementStrategy;
 import io.github.crazysadboi.strategies.PlayerMovementStrategy;
 import io.github.crazysadboi.utils.EnemyFactory;
+import io.github.crazysadboi.utils.IEnemyFactory;
 import io.github.crazysadboi.utils.SoundManager;
 import io.github.crazysadboi.gameObjects.GameObjectHolder;
 
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 public class PlayingState implements GameState {
     private SpriteBatch batch;
     private BitmapFont font;
-    private Texture background, heartTexture;
+    private AssetManager assetManager;
     private ArrayList<Block> blocks;
     private ArrayList<Enemy> enemies;
     private ArrayList<Bullet> bullets;
@@ -42,48 +44,73 @@ public class PlayingState implements GameState {
     private final int maxBullets = 25;
     private float blockBuildCooldown = 6f;
     private boolean gameOver = false;
-    private EnemyFactory enemyFactory;
+    private IEnemyFactory enemyFactory;
 
     private GameStateManager gsm;
 
     public PlayingState(GameStateManager gsm, BitmapFont font) {
         this.gsm = gsm;
         this.font = font;
+        this.assetManager = new AssetManager();
     }
 
     @Override
     public void enter() {
-        batch = new SpriteBatch();
-        font = new BitmapFont();
-        background = new Texture("sea.png");
-        heartTexture = new Texture("heart.png");
-        blocks = new ArrayList<>();
-        initialX = Math.round((float) Gdx.graphics.getWidth() / 2 / 50) * 50;
-        initialY = Math.round((float) Gdx.graphics.getHeight() / 2 / 50) * 50;
-        blocks.add(new Block(initialX, initialY));
-        blocks.add(new Block(initialX + 50, initialY));
-        blocks.add(new Block(initialX, initialY + 50));
-        blocks.add(new Block(initialX + 50, initialY + 50));
+        try {
+            batch = new SpriteBatch();
+            font = new BitmapFont();
+            System.out.println("SpriteBatch and BitmapFont initialized");
 
-        eventManager = GameEventManager.getInstance();
+            assetManager.load("sea.png", Texture.class);
+            assetManager.load("heart.png", Texture.class);
+            assetManager.load("enemy.png", Texture.class);
+            System.out.println("Texture loading initiated");
+            assetManager.finishLoading();
+            System.out.println("Texture loading completed");
 
-        soundManager = new SoundManager();
-        soundListener = new SoundListener(soundManager);
+            if (assetManager.isLoaded("enemy.png")) {
+                System.out.println("Enemy texture loaded successfully");
+            } else {
+                System.err.println("Failed to load enemy texture");
+                throw new RuntimeException("Enemy texture not loaded");
+            }
 
-        eventManager.subscribe("PLAYER_SHOOT", soundListener);
+            blocks = new ArrayList<>();
+            initialX = Math.round((float) Gdx.graphics.getWidth() / 2 / 50) * 50;
+            initialY = Math.round((float) Gdx.graphics.getHeight() / 2 / 50) * 50;
+            blocks.add(new Block(initialX, initialY));
+            blocks.add(new Block(initialX + 50, initialY));
+            blocks.add(new Block(initialX, initialY + 50));
+            blocks.add(new Block(initialX + 50, initialY + 50));
+            System.out.println("Blocks initialized");
 
-        player = new Player(initialX, initialY);
-        enemies = new ArrayList<>();
-        enemyFactory = new EnemyFactory(enemyFactory != null ? enemyFactory.getEnemyTexture() : null, enemies, blocks);
-        for (int i = 0; i < 2; i++) {
-            enemyFactory.createEnemy();
-        }
-        bullets = new ArrayList<>();
+            eventManager = GameEventManager.getInstance();
+            soundManager = new SoundManager();
+            soundListener = new SoundListener(soundManager);
+            eventManager.subscribe("PLAYER_SHOOT", soundListener);
+            System.out.println("Event and sound systems initialized");
 
-        enemiesKilled = 0;
-        currentBullets = maxBullets;
-        if (enemiesKilled > recordEnemiesKilled) {
-            recordEnemiesKilled = enemiesKilled;
+            player = new Player(initialX, initialY);
+            System.out.println("Player initialized");
+
+            enemies = new ArrayList<>();
+            enemyFactory = new EnemyFactory(assetManager.get("enemy.png", Texture.class), 100f, 1);
+            for (int i = 0; i < 2; i++) {
+                enemies.add(enemyFactory.createEnemy(blocks));
+                System.out.println("Created enemy " + (i + 1));
+            }
+            bullets = new ArrayList<>();
+            System.out.println("Enemies and bullets initialized");
+
+            enemiesKilled = 0;
+            currentBullets = maxBullets;
+            if (enemiesKilled > recordEnemiesKilled) {
+                recordEnemiesKilled = enemiesKilled;
+            }
+        } catch (Exception e) {
+            System.err.println("Error in PlayingState.enter: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to initialize PlayingState", e);
         }
     }
 
@@ -92,8 +119,8 @@ public class PlayingState implements GameState {
         if (gameOver) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
                 gameOver = false;
-                dispose();
-                enter();
+                gsm.changeState(new GameOverState(gameTime, enemiesKilled, font, gsm));
+                return;
             }
             return;
         }
@@ -147,7 +174,9 @@ public class PlayingState implements GameState {
         }
 
         if (enemySpawnTime >= 10f) {
-            enemyFactory.createEnemy();
+            Enemy newEnemy = enemyFactory.createEnemy(blocks);
+            enemies.add(newEnemy);
+            System.out.println("Spawned new enemy: " + (newEnemy != null ? "Enemy created" : "Enemy is null"));
             enemySpawnTime = 0f;
             GameEventManager.getInstance().notify("enemySpawned");
         }
@@ -177,47 +206,49 @@ public class PlayingState implements GameState {
 
     @Override
     public void render(SpriteBatch batch) {
-        GameObjectHolder.getInstance().clearDestroyed();
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//        batch.begin();
-        batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        GameObjectHolder.getInstance().renderObjects(batch);
+        try {
+            // Временно отключаем очистку уничтоженных объектов для теста
+            // GameObjectHolder.getInstance().clearDestroyed();
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            batch.draw(assetManager.get("enemy.png", Texture.class), 10, Gdx.graphics.getHeight() - 60, 50, 50);
+            batch.draw(assetManager.get("sea.png", Texture.class), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            GameObjectHolder.getInstance().renderObjects(batch);
 
-        boolean isOnBlock = isPlayerOnBlock();
-        if (!isOnBlock && timeOffBlock > 0) {
-            float alpha = 0.5f + 0.5f * (float) Math.sin(stateTime * 5);
-            batch.setColor(1, 1, 1, alpha);
-            player.render(batch);
-            batch.setColor(1, 1, 1, 1);
-        } else {
-            player.render(batch);
-        }
+            boolean isOnBlock = isPlayerOnBlock();
+            if (!isOnBlock && timeOffBlock > 0) {
+                float alpha = 0.5f + 0.5f * (float) Math.sin(stateTime * 5);
+                batch.setColor(1, 1, 1, alpha);
+                player.render(batch);
+                batch.setColor(1, 1, 1, 1);
+            } else {
+                player.render(batch);
+            }
 
-        for (int i = 0; i < player.getLives(); i++) {
-            batch.draw(heartTexture, 10 + i * 40, Gdx.graphics.getHeight() - 40, 32, 32);
-        }
-        font.draw(batch, "Time: " + (int) gameTime + " sec", Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 10);
-        font.draw(batch, "Kills: " + enemiesKilled, Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 25);
-        font.draw(batch, "Record: " + recordEnemiesKilled, Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 40);
-        font.draw(batch, "Bullets: " + currentBullets + "/" + maxBullets, Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 55);
+            for (int i = 0; i < player.getLives(); i++) {
+                batch.draw(assetManager.get("heart.png", Texture.class), 10 + i * 40, Gdx.graphics.getHeight() - 40, 32, 32);
+            }
+            font.draw(batch, "Time: " + (int) gameTime + " sec", Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 10);
+            font.draw(batch, "Kills: " + enemiesKilled, Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 25);
+            font.draw(batch, "Record: " + recordEnemiesKilled, Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 40);
+            font.draw(batch, "Bullets: " + currentBullets + "/" + maxBullets, Gdx.graphics.getWidth() - 200, Gdx.graphics.getHeight() - 55);
 
-        if (gameOver) {
-            font.draw(batch, "Game Over", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2 + 30);
-            font.draw(batch, "Time: " + (int) gameTime + " sec", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2);
-            font.draw(batch, "Kills: " + enemiesKilled, Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2 - 15);
-            font.draw(batch, "Record: " + recordEnemiesKilled, Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2 - 30);
-            font.draw(batch, "Press R to Restart", Gdx.graphics.getWidth() / 2 - 70, Gdx.graphics.getHeight() / 2 - 60);
+            if (gameOver) {
+                font.draw(batch, "Game Over", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2 + 30);
+                font.draw(batch, "Time: " + (int) gameTime + " sec", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2);
+                font.draw(batch, "Kills: " + enemiesKilled, Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2 - 15);
+                font.draw(batch, "Record: " + recordEnemiesKilled, Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() / 2 - 30);
+                font.draw(batch, "Press R to Restart", Gdx.graphics.getWidth() / 2 - 70, Gdx.graphics.getHeight() / 2 - 60);
+            }
+        } catch (Exception e) {
+            System.err.println("Error in PlayingState.render: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to render PlayingState", e);
         }
-//        batch.end();
     }
 
     @Override
     public void exit() {
-        batch.dispose();
-        font.dispose();
-        background.dispose();
-        heartTexture.dispose();
-        // Dispose other textures if needed
+        dispose();
     }
 
     private void updateBullets(float deltaTime) {
@@ -234,13 +265,17 @@ public class PlayingState implements GameState {
                 Enemy enemy = enemies.get(j);
                 if (bullet.getX() < enemy.getX() + 50 && bullet.getX() + 10 > enemy.getX() &&
                     bullet.getY() < enemy.getY() + 50 && bullet.getY() + 10 > enemy.getY()) {
-                    enemies.get(j).destroy();
+                    enemy.takeDamage(1);
                     bullets.get(i).destroy();
-                    enemies.remove(j);
                     bullets.remove(i);
-                    enemiesKilled++;
-                    enemyFactory.createEnemy();
-                    GameEventManager.getInstance().notify("enemyKilled");
+                    if (enemy.isDestroyed()) {
+                        enemies.remove(j);
+                        enemiesKilled++;
+                        Enemy newEnemy = enemyFactory.createEnemy(blocks);
+                        enemies.add(newEnemy);
+                        System.out.println("Enemy killed, new enemy spawned: " + (newEnemy != null ? "Enemy created" : "Enemy is null"));
+                        GameEventManager.getInstance().notify("enemyKilled");
+                    }
                     break;
                 }
             }
@@ -253,7 +288,6 @@ public class PlayingState implements GameState {
             enemy.moveTowards(player.getX() + 25, player.getY() + 25, deltaTime, new EnemyMovementStrategy());
             if (enemy.isOnBlock(blocks, 50)) {
                 enemy.destroyBlock(blocks, 50, player);
-                enemy.destroy();
             }
             enemy.attackPlayer(player, deltaTime);
         }
@@ -277,55 +311,48 @@ public class PlayingState implements GameState {
     }
 
     public void dispose() {
-        // Освобождаем графические ресурсы
-        if (batch != null) {
-            batch.dispose();
-            batch = null;
-        }
-        if (font != null) {
-            font.dispose();
-            font = null;
-        }
-        if (background != null) {
-            background.dispose();
-            background = null;
-        }
-        if (heartTexture != null) {
-            heartTexture.dispose();
-            heartTexture = null;
-        }
-        // Если есть другие текстуры — освободи их тоже
-        if (enemyFactory != null && enemyFactory.getEnemyTexture() != null) {
-            enemyFactory.getEnemyTexture().dispose();
-        }
+        try {
+            if (batch != null) {
+                batch.dispose();
+                batch = null;
+            }
+            if (font != null) {
+                font.dispose();
+                font = null;
+            }
+            if (assetManager != null) {
+                assetManager.dispose();
+                assetManager = null;
+            }
 
-        GameObjectHolder.getInstance().dispose();
+            GameObjectHolder.getInstance().dispose();
 
-        // Очищаем коллекции
-        if (blocks != null) {
-            blocks.clear();
-            blocks = null;
-        }
-        if (enemies != null) {
-            enemies.clear();
-            enemies = null;
-        }
-        if (bullets != null) {
-            bullets.clear();
-            bullets = null;
-        }
+            if (blocks != null) {
+                blocks.clear();
+                blocks = null;
+            }
+            if (enemies != null) {
+                enemies.clear();
+                enemies = null;
+            }
+            if (bullets != null) {
+                bullets.clear();
+                bullets = null;
+            }
 
-        // Отписываемся от событий, если нужно
-        if (eventManager != null && soundListener != null) {
-            eventManager.unsubscribe("PLAYER_SHOOT", soundListener);
+            if (eventManager != null && soundListener != null) {
+                eventManager.unsubscribe("PLAYER_SHOOT", soundListener);
+            }
+
+            player = null;
+            enemyFactory = null;
+            eventManager = null;
+            soundListener = null;
+
+            System.out.println("PlayingState disposed");
+        } catch (Exception e) {
+            System.err.println("Error in PlayingState.dispose: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        // Обнуляем ссылки
-        player = null;
-        enemyFactory = null;
-        eventManager = null;
-        soundListener = null;
-
-        System.out.println("PlayingState disposed");
     }
 }

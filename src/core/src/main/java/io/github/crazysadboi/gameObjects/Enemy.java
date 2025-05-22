@@ -2,15 +2,33 @@ package io.github.crazysadboi.gameObjects;
 
 import com.badlogic.gdx.graphics.Texture;
 import io.github.crazysadboi.strategies.MovementStrategy;
-
 import java.util.ArrayList;
 
 public class Enemy extends BaseGameObject {
     private float attackCooldown;
+    private float speed;
+    private int health;
 
-    public Enemy(float x, float y) {
-        super(x, y, new Texture("enemy.png"), true, 2);
+    public Enemy(float x, float y, Texture texture, float speed, int health) {
+        super(x, y, texture, true, 2);
         this.attackCooldown = 0f;
+        this.speed = speed;
+        this.health = health;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void takeDamage(int damage) {
+        health -= damage;
+        if (health <= 0) {
+            destroy();
+        }
     }
 
     public void moveTowards(float targetX, float targetY, float deltaTime, MovementStrategy strategy) {
@@ -52,23 +70,7 @@ public class Enemy extends BaseGameObject {
                 player.loseLife();
                 destroy();
             }
+            attackCooldown = 2f; // Сбрасываем кулдаун после атаки
         }
     }
 }
-
-
-
-/*Класс Enemy представляет врагов в игре DesignPatternsFinalGame.
-Враги появляются на игровом поле, преследуют игрока, атакуют его и могут разрушать блоки, если находятся на них достаточно долго.
-
-- Поля: `x, y` — координаты врага; `texture` — изображение врага; `timeOnBlock` — время, проведённое на блоке (публичное для доступа); `attackCooldown` — задержка между атаками.
-- Конструктор: Инициализирует врага с координатами и текстурой, устанавливая начальные значения времени и кулдауна.
-- Реализует интерфейс GameObject (методы `render`, `getX`, `getY`, `setPosition`): `render` рисует врага размером 50x50 пикселей.
-- Метод `moveTowards`: Использует стратегию движения (MovementStrategy) для преследования игрока, передавая текущие координаты и время.
-- Метод `isOnBlock`: Проверяет, находится ли враг на блоке, сравнивая координаты с массивом блоков.
-- Метод `destroyBlock`: Удаляет блок под врагом, если он не занят игроком, после 4 секунд нахождения на нём.
-- Метод `attackPlayer`: Атакует игрока каждые 2 секунды, если враг рядом, уменьшая жизни игрока.
-
-**Шаблоны**:
-- **Composite**: Enemy реализует GameObject, обеспечивая унификацию с другими объектами.
-- **Strategy**: Использует MovementStrategy для гибкого управления движением врагов.*/

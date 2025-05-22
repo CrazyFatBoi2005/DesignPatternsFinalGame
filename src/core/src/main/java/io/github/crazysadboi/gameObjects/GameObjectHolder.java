@@ -33,14 +33,14 @@ public class GameObjectHolder {
         return objects.get(key);
     }
 
-    public void clearDestroyed(){
+    public void clearDestroyed() {
         objects.entrySet().removeIf(entry -> entry.getValue().isDestroyed());
     }
 
     public void renderObjects(SpriteBatch batch) {
         ArrayList<GameObject> sortedByLayer = new ArrayList<>(objects.values());
         Collections.sort(sortedByLayer, (obj1, obj2) -> Integer.compare(obj1.getLayer(), obj2.getLayer()));
-        for (GameObject object : objects.values()) {
+        for (GameObject object : sortedByLayer) {
             if (!object.isDestroyed()) {
                 object.render(batch);
             }
@@ -55,7 +55,3 @@ public class GameObjectHolder {
         objectId = 0;
     }
 }
-
-/*Шаблон:
-Singleton: Используется через getInstance для создания единственного экземпляра хранилища,
- обеспечивая глобальный доступ к объектам (например, игроку из PlayerMovementStrategy).*/

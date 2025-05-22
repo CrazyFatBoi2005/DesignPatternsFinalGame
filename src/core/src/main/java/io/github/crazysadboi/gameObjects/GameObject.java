@@ -8,16 +8,9 @@ public interface GameObject {
     float getY();
     void destroy();
     void setPosition(float x, float y);
-
     boolean isDestroyed();
     int getLayer();
-
     void dispose();
 }
 
-/**
- * Интерфейс GameObject определяет общие методы для всех игровых объектов
- * (блоки, игроки, враги, пули) в проекте DesignPatternsFinalGame.
- * Используется в рамках шаблона Composite для унификации управления объектами.
- * Реализуйте этот интерфейс для новых объектов, добавляемых в игру.
- */
+

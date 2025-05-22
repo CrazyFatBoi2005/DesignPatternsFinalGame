@@ -21,14 +21,14 @@ public class MainMenuState implements GameState {
 
     @Override
     public void update(float delta) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             gsm.changeState(new PlayingState(gsm, font));
         }
     }
 
     @Override
     public void render(SpriteBatch batch) {
-        font.draw(batch, "Press 'SPACE' to start game",
+        font.draw(batch, "Press 'ENTER' to start game",
             Gdx.graphics.getWidth() / 2f - 100,
             Gdx.graphics.getHeight() / 2f);
     }
